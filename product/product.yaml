@@ -1,0 +1,11 @@
+_ > nanoagent.plugin.v0001.ProductConfig:
+tagline: "Ask questions of Houston crash data, get answers you can check"
+summary: "Pick a question about 400 Houston freeway crashes, which road had the most severe crashes, what share happened at night, and an agent answers it by querying the table with counting, grouping and statistics tools. The answer is checked against an exact answer key."
+highlights:
+  - "Every answer comes from the data, never from a guess"
+  - "Exact answer keys, with stated tolerances and ties allowed"
+  - "A fixed dataset, regenerated from a seed, so results reproduce anywhere"
+steps:
+  - "Pick a question about the crashes"
+  - "The agent explores the columns and runs counts, groups and statistics"
+  - "It submits one answer, and the verifier checks it against the key"

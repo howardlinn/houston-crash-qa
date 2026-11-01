@@ -1,0 +1,47 @@
+_ > nanoagent.plugin.v0001.ManifestConfig:
+id: houston-crash-qa
+name: Houston Crash Q&A
+version: 0.1.0
+status: ready
+spec: nanoagent.plugin/v0001
+
+runtime > nanoagent.plugin.v0001.RuntimeConfig:
+  type: mcp_stdio
+  command: [uv, run, --frozen, python, -m, plugin]
+
+permissions > nanoagent.plugin.v0001.PermissionsConfig:
+  network > nanoagent.plugin.v0001.NetworkConfig:
+    hosts: []
+  filesystem > nanoagent.plugin.v0001.FilesystemConfig:
+    write: [workspace]
+
+# One entry per contract.Tool; its input and output classes are contract.TOOLS's.
+tools > dict[contract.Tool, nanoagent.plugin.v0001.ToolConfig]:
+  describe_dataset:
+    description: Describe the crash dataset, its size, its columns and their values
+  count_rows:
+    description: Count the crashes that meet every filter
+  group_count:
+    description: Count the crashes that meet every filter, per value of one column, most first
+  column_stat:
+    description: The mean, median, sum, minimum or maximum of a numeric column over the crashes that meet every filter
+  answer_key:
+    description: The right answer to a question about the dataset (the reference, never shown to the agent)
+
+# One entry per contract.Task; its input class is contract.TASKS's.
+tasks > dict[contract.Task, nanoagent.plugin.v0001.TaskConfig]:
+  count-rows:
+    description: Count the crashes that meet some conditions
+    runner: tool
+    tools: [count_rows]
+    reference: null
+    instructions: Count the crashes that meet every filter.
+  answer-question:
+    description: Answer a question about Houston crashes from the data
+    runner: agent
+    tools: [describe_dataset, count_rows, group_count, column_stat]
+    reference: answer_key
+    instructions: |-
+      Answer the question from the crash dataset, using only the tools' results.
+      Start with describe_dataset to learn the columns and how their values are spelled. Filters all apply at once (AND); for "A or B" run one query per value and combine the results yourself. Shares and percentages are ratios of two counts.
+      Submit the answer alone: a number for a how-many, average, median or percentage question (unrounded or to at least two decimals; a percentage on a 0 to 100 scale), or the value exactly as the dataset spells it for a which question (an hour as its number, e.g. 16).
